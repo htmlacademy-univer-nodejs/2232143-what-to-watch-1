@@ -16,8 +16,8 @@ export default class ImportCommand implements CliCommandInterface {
 
   public async execute(filename: string): Promise<void> {
     const fileReader = new TSVFileReader(filename.trim());
-    fileReader.on("line", this.onLine);
-    fileReader.on("end", this.onComplete);
+    fileReader.on('line', this.onLine);
+    fileReader.on('end', this.onComplete);
 
     try {
       await fileReader.read();

@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import TSVFileWriter from '../common/file-writer/tsv-file-writer.js';
 
 export default class GenerateCommand implements CliCommandInterface {
-  public readonly name = "--generate";
+  public readonly name = '--generate';
   private initialData!: TMockData;
 
   public async execute(...parameters:string[]): Promise<void> {

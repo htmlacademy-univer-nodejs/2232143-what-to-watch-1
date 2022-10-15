@@ -1,7 +1,7 @@
 import { getGenre } from '../types/genre.type.js';
 import { TMovie } from '../types/movie.type.js';
 
-export const createMovie = (row: string) => {
+export const createMovie = (row: string) : TMovie => {
   const tokens = row.replace('\n', '').split('\t');
   const [
     title, description, published, genre,
@@ -28,7 +28,7 @@ export const createMovie = (row: string) => {
     posterImage,
     backgroundImage,
     backgroundColor
-  } as TMovie;
+  };
 };
 
 export const getErrorMessage = (error: unknown): string =>
