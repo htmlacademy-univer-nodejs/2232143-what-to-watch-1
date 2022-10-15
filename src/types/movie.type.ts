@@ -1,11 +1,11 @@
-import { Genre } from './genre.enum';
-import { TUser } from './user.type';
+import { TGenre } from './genre.type.js';
+import { TUser } from './user.type.js';
 
 export type TMovie = {
     title: string;
     description: string;
     published: Date;
-    genre: Genre;
+    genre: TGenre;
     released: number;
     rating: number;
     previewVideoLink: string;
