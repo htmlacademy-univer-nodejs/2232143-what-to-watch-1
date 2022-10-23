@@ -1,13 +1,14 @@
 import { getGenre } from '../types/genre.type.js';
 import { TMovie } from '../types/movie.type.js';
+import crypto from 'crypto';
 
-export const createMovie = (row: string) : TMovie => {
+export const createMovie = (row: string): TMovie => {
   const tokens = row.replace('\n', '').split('\t');
   const [
     title, description, published, genre,
     released, rating, previewVideoLink, videoLink,
-    starring, director, runTime, commentsCount,
-    name, email, avatarUrl, password, posterImage,
+    starring, director, runTime,
+    name, email, avatarUrl, posterImage,
     backgroundImage, backgroundColor
   ] = tokens;
 
@@ -23,8 +24,7 @@ export const createMovie = (row: string) : TMovie => {
     starring: starring.split(','),
     director,
     runTime: Number.parseInt(runTime, 10),
-    commentsCount: Number.parseInt(commentsCount, 10),
-    user: { name, email, avatarUrl, password },
+    user: { name, email, avatarUrl },
     posterImage,
     backgroundImage,
     backgroundColor
@@ -33,3 +33,6 @@ export const createMovie = (row: string) : TMovie => {
 
 export const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : '';
+
+export const createSHA256 = (line: string, salt: string): string =>
+  crypto.createHmac('sha256', salt).update(line).digest('hex');
