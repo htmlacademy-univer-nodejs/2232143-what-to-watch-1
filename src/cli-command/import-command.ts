@@ -15,13 +15,7 @@ import MongoDBService from '../common/db-client/mongodb.service.js';
 import { TMovie } from '../types/movie.type.js';
 import { getDBConnectionURI } from '../utils/db.js';
 
-const DB_USER = 'admin';
-const DB_PASSWORD = 'test';
-const DB_HOST = '127.0.0.1';
-const DB_PORT = 27017;
-const DB_NAME = 'want-to-watch';
 const USER_PASSWORD = '123456';
-const SALT = 'Salt123';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -55,19 +49,19 @@ export default class ImportCommand implements CliCommandInterface {
 
   private async onLine(line: string, resolve: () => void) {
     const movie = createMovie(line);
-    console.log(movie);
+    this.logger.info(JSON.stringify(movie));
     await this.saveMovie(movie);
     resolve();
   }
 
   private onComplete(count: number) {
-    console.log(chalk.green(`${count} rows imported.`));
+    this.logger.info(chalk.green(`${count} rows imported.`));
     this.databaseService.disconnect();
   }
 
-  async execute(filename: string): Promise<void> {
-    const uri = getDBConnectionURI(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME);
-    this.salt = SALT;
+  async execute(filename: string, user: string, password: string, host: string, port: string, name: string, salt: string): Promise<void> {
+    const uri = getDBConnectionURI(user, password, host, Number(port), name);
+    this.salt = salt;
     await this.databaseService.connect(uri);
 
     const fileReader = new TSVFileReader(filename.trim());
@@ -77,7 +71,7 @@ export default class ImportCommand implements CliCommandInterface {
     try {
       await fileReader.read();
     } catch (err) {
-      console.log(chalk.red(`Can't read the file: ${getErrorMessage(err)}`));
+      this.logger.info(chalk.red(`Can't read the file: ${getErrorMessage(err)}`));
     }
   }
 }
