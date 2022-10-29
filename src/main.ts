@@ -6,11 +6,25 @@ import { Container } from 'inversify';
 import { Component } from './types/component.type.js';
 import { LoggerInterface } from './common/logger/logger.interface.js';
 import { ConfigInterface } from './common/config/config.interface.js';
+import MongoDBService from './common/db-client/mongodb.service.js';
+import { DatabaseInterface } from './common/db-client/db.interface.js';
+import { UserServiceInterface } from './modules/user/user-service.interface.js';
+import UserService from './modules/user/user.service.js';
+import { UserEntity, UserModel } from './modules/user/user.entity.js';
+import { types } from '@typegoose/typegoose';
+import { MovieEntity, MovieModel } from './modules/movie/movie.entity.js';
+import { MovieServiceInterface } from './modules/movie/movie-service.interface.js';
+import MovieService from './modules/movie/movie.service.js';
 
 const applicationContainer = new Container();
 applicationContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
 applicationContainer.bind<LoggerInterface>(Component.LoggerInterface).to(LoggerService).inSingletonScope();
 applicationContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigService).inSingletonScope();
+applicationContainer.bind<DatabaseInterface>(Component.DatabaseInterface).to(MongoDBService).inSingletonScope();
+applicationContainer.bind<UserServiceInterface>(Component.UserServiceInterface).to(UserService);
+applicationContainer.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
+applicationContainer.bind<MovieServiceInterface>(Component.MovieServiceInterface).to(MovieService);
+applicationContainer.bind<types.ModelType<MovieEntity>>(Component.MovieModel).toConstantValue(MovieModel);
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();

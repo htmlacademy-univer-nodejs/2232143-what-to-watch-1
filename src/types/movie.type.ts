@@ -13,7 +13,6 @@ export type TMovie = {
     starring: string[];
     director: string;
     runTime: number;
-    commentsCount: number;
     user: TUser;
     posterImage: string;
     backgroundImage: string;
