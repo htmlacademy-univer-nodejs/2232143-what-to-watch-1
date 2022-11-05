@@ -27,7 +27,8 @@ export const createMovie = (row: string): TMovie => {
     user: { name, email, avatarUrl },
     posterImage,
     backgroundImage,
-    backgroundColor
+    backgroundColor,
+    commentsCount: 0
   };
 };
 

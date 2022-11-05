@@ -14,6 +14,8 @@ import { MovieModel } from '../modules/movie/movie.entity.js';
 import MongoDBService from '../common/db-client/mongodb.service.js';
 import { TMovie } from '../types/movie.type.js';
 import { getDBConnectionURI } from '../utils/db.js';
+import { ConfigInterface } from '../common/config/config.interface.js';
+import ConfigService from '../common/config/config.service.js';
 
 const USER_PASSWORD = '123456';
 
@@ -24,6 +26,7 @@ export default class ImportCommand implements CliCommandInterface {
   private databaseService!: DatabaseInterface;
   private logger: LoggerInterface;
   private salt!: string;
+  private config: ConfigInterface;
 
   constructor() {
     this.onLine = this.onLine.bind(this);
@@ -31,8 +34,9 @@ export default class ImportCommand implements CliCommandInterface {
 
     this.logger = new ConsoleLoggerService();
     this.movieService = new MovieService(this.logger, MovieModel);
-    this.userService = new UserService(this.logger, UserModel);
+    this.userService = new UserService(this.logger, UserModel, MovieModel);
     this.databaseService = new MongoDBService(this.logger);
+    this.config = new ConfigService(this.logger);
   }
 
   private async saveMovie(movie: TMovie) {
@@ -59,9 +63,10 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService.disconnect();
   }
 
-  async execute(filename: string, user: string, password: string, host: string, port: string, name: string, salt: string): Promise<void> {
-    const uri = getDBConnectionURI(user, password, host, Number(port), name);
-    this.salt = salt;
+  async execute(filename: string): Promise<void> {
+    this.salt = this.config.get('SALT');
+
+    const uri = getDBConnectionURI(this.config.get('DB_USER'), this.config.get('DB_PASSWORD'), this.config.get('DB_HOST'), this.config.get('DB_PORT'), this.config.get('DB_NAME'));
     await this.databaseService.connect(uri);
 
     const fileReader = new TSVFileReader(filename.trim());
