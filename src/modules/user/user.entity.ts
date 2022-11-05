@@ -1,6 +1,6 @@
 import { TUser } from '../../types/user.type.js';
 import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoose';
-import { createSHA256 } from '../../utils/common.js';
+import { createSHA256, checkPassword } from '../../utils/common.js';
 
 const { prop, modelOptions } = typegoose;
 
@@ -34,6 +34,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   private password!: string;
 
   setPassword(password: string, salt: string) {
+    checkPassword(password);
     this.password = createSHA256(password, salt);
   }
 
