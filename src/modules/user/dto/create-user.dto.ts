@@ -11,6 +11,8 @@ export default class CreateUserDto {
   @Length(6, 12, { message: 'Min length for password is 6, max is 12' })
   public password!: string;
 
-  @Matches(/[^\\s]+(.*?)\\.(jpg|png)$/, { message: 'avatarUrl must be .jpg or .png format image' })
+  @Matches(/[^\\s]+\.(jpg|png)$/, { message: 'avatarUrl must be .jpg or .png format image' })
   public avatarUrl?: string;
+
+  public moviesToWatch: string[] = [];
 }

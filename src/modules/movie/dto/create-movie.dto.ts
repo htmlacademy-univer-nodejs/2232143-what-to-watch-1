@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsEnum, IsInt, IsMongoId, IsString, Length, Matches, Max, Min } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsInt, IsMongoId, IsString, Length, Matches, Max, Min, IsBoolean } from 'class-validator';
 import { GenreEnum, TGenre } from '../../../types/genre.type.js';
 
 export default class CreateMovieDto {
@@ -21,6 +21,7 @@ export default class CreateMovieDto {
 
   @IsString({ message: 'previewVideoLink is required' })
   public previewVideoLink!: string;
+
   @IsString({ message: 'videoLink is required' })
   public videoLink!: string;
 
@@ -47,4 +48,7 @@ export default class CreateMovieDto {
 
   @IsString({ message: 'backgroundColor is required' })
   public backgroundColor!: string;
+
+  @IsBoolean({ message: 'isPromo should be boolean' })
+  public isPromo?: boolean;
 }
