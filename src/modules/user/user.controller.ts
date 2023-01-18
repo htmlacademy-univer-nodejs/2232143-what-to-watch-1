@@ -5,7 +5,6 @@ import { ConfigInterface } from '../../common/config/config.interface.js';
 import { Controller } from '../../common/controller/controller.js';
 import HttpError from '../../common/errors/http-error.js';
 import { LoggerInterface } from '../../common/logger/logger.interface.js';
-import { MultipartFromDataMiddleware } from '../../middlewares/multipart-form-data.middleware.js';
 import { PrivateRouteMiddleware } from '../../middlewares/private-route.middleware.js';
 import { UploadFileMiddleware } from '../../middlewares/upload-file.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../middlewares/validate-objectid.middleware.js';
@@ -34,7 +33,7 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new MultipartFromDataMiddleware(this.configService.get('UPLOAD_DIRECTORY')),
+        new UploadFileMiddleware('avatar', this.configService.get('UPLOAD_DIRECTORY')),
         new ValidateDtoMiddleware(CreateUserDto),
       ]
     });
@@ -49,19 +48,19 @@ export default class UserController extends Controller {
       path: UserRoute.TO_WATCH,
       method: HttpMethod.Get,
       handler: this.getToWatch,
-      middlewares: [new PrivateRouteMiddleware()]
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.TO_WATCH,
       method: HttpMethod.Post,
       handler: this.postToWatch,
-      middlewares: [new PrivateRouteMiddleware()]
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.TO_WATCH,
       method: HttpMethod.Delete,
       handler: this.deleteToWatch,
-      middlewares: [new PrivateRouteMiddleware()]
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.AVATAR,
@@ -69,7 +68,7 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new UploadFileMiddleware('avatar', this.userService, this.configService.get('UPLOAD_DIRECTORY'))
+        new UploadFileMiddleware('avatar', this.configService.get('UPLOAD_DIRECTORY'))
       ]
     });
   }

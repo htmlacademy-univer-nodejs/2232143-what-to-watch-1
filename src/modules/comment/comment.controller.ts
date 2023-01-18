@@ -14,10 +14,12 @@ import { CommentRoute } from './comment.models.js';
 import CreateCommentDto from './dto/create-comment.dto.js';
 import { PrivateRouteMiddleware } from '../../middlewares/private-route.middleware.js';
 import CommentResponse from './response/comment.response.js';
+import {UserServiceInterface} from '../user/user-service.interface';
 
 export default class CommentController extends Controller {
   constructor(@inject(Component.LoggerInterface) logger: LoggerInterface,
     @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
+    @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface,
     @inject(Component.MovieServiceInterface) private readonly movieService: MovieServiceInterface) {
     super(logger);
 
@@ -27,7 +29,7 @@ export default class CommentController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateDtoMiddleware(CreateCommentDto)
       ]
     });

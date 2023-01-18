@@ -23,6 +23,7 @@ import MovieListItemResponse from './response/movie-list-item.response.js';
 import { StatusCodes } from 'http-status-codes';
 import HttpError from '../../common/errors/http-error.js';
 import { PrivateRouteMiddleware } from '../../middlewares/private-route.middleware.js';
+import { UserServiceInterface } from '../user/user-service.interface.js';
 
 type ParamsGetMovie = {
   movieId: string;
@@ -37,6 +38,7 @@ type QueryParamsGetMovies = {
 export default class MovieController extends Controller {
   constructor(@inject(Component.LoggerInterface) logger: LoggerInterface,
     @inject(Component.MovieServiceInterface) private readonly movieService: MovieServiceInterface,
+    @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface,
     @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface) {
     super(logger);
 
@@ -49,7 +51,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateDtoMiddleware(CreateMovieDto)
       ]
     });
@@ -67,7 +69,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateObjectIdMiddleware('movieId'),
         new ValidateDtoMiddleware(UpdateMovieDto),
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
@@ -78,7 +80,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateObjectIdMiddleware('movieId'),
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
       ]
