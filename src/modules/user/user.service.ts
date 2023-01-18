@@ -6,6 +6,7 @@ import { inject, injectable } from 'inversify';
 import { Component } from '../../types/Component.type.js';
 import { LoggerInterface } from '../../common/logger/logger.interface.js';
 import { types } from '@typegoose/typegoose';
+import LoginUserDto from './dto/login-user.dto.js';
 import { MovieEntity } from '../movie/movie.entity.js';
 
 @injectable()
@@ -24,6 +25,14 @@ export default class UserService implements UserServiceInterface {
     return result;
   }
 
+  async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findById(userId);
+  }
+
+  async setUserAvatarPath(userId: string, avatarPath: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId, { avatarPath });
+  }
+
   async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findOne({ email });
   }
@@ -40,7 +49,7 @@ export default class UserService implements UserServiceInterface {
 
   async findToWatch(userId: string): Promise<DocumentType<MovieEntity>[]> {
     const moviesToWatch = await this.userModel.findById(userId).select('moviesToWatch');
-    return this.movieModel.find({ _id: { $in: moviesToWatch?.moviesToWatch } });
+    return this.movieModel.find({ _id: { $in: moviesToWatch?.moviesToWatch } }).populate('user');
   }
 
   async addToWatch(movieId: string, userId: string): Promise<void | null> {
@@ -53,5 +62,13 @@ export default class UserService implements UserServiceInterface {
     return this.userModel.findByIdAndUpdate(userId, {
       $pull: { moviesToWatch: movieId }
     });
+  }
+
+  async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+    if (user && user.verifyPassword(dto.password, salt)) {
+      return user;
+    }
+    return null;
   }
 }
