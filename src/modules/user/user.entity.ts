@@ -12,6 +12,7 @@ export interface UserEntity extends defaultClasses.Base {
     collection: 'users'
   }
 })
+
 export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   constructor(data: TUser) {
     super();
@@ -40,6 +41,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
     checkPassword(password);
     this.password = createSHA256(password, salt);
   }
+
   verifyPassword(password: string, salt: string) {
     return createSHA256(password, salt) === this.password;
   }
